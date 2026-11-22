@@ -71,6 +71,11 @@ El mismo celular corre `python server.py` (servicio `lub-server`, solo en `127.0
 
 Sin clave configurada la lectura es abierta y la carga POST (`/api/cargar`) queda cerrada. No cargues claves en el celu salvo que quieras habilitar esa carga.
 
+## Repos privados: deploy keys
+El token https del celu (`~/.git-credentials`) es fine-grained y solo cubre LUBRICANTES. Los otros dos repos privados van por SSH con una deploy key de solo lectura cada uno (`~/.ssh/config`):
+- `github-celu` → `~/.ssh/celu_servidor_deploy` (este repo, pull del minuto 25).
+- `github-modelos` → `~/.ssh/lub_modelos_deploy` (LUB-MODELOS3D, submódulo `site/modelos` de `~/lub-casa`). `termux_setup.sh` fija `submodule.site/modelos.url` a `git@github-modelos:…` en `~/lub-casa/.git/config`: un `insteadOf` no alcanza porque el clone del submódulo no lo lee (falla con 403). Sin esa key el pull sigue andando y la página queda sin 3D.
+
 ## Archivo de zips de SEPA
 
 El cron de las 06:00 define `SEPA_ARCHIVO=$HOME/sepa-archivo` (lo deja `termux_setup.sh`, fuera del clon). `sepa.py` copia ahí el zip crudo del día como `sepa-AAAA-MM-DD.zip` (~336 MB; escribe un `.tmp` y renombra) y borra los más viejos cuando la carpeta pasa de 60 GB. Sirve para reprocesar días pasados si se suman productos al seed (SEPA publica pocos días hacia atrás). Para cambiar el tope: `SEPA_ARCHIVO_MAX_GB=<n>` en el crontab (`crontab -e`, que `termux_setup.sh` no pisa) o, para apagarlo, borrar la línea `SEPA_ARCHIVO=`. Si falla (disco lleno), se loguea y SEPA sigue igual.

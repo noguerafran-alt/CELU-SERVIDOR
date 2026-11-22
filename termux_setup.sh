@@ -46,6 +46,10 @@ if [ ! -d "$CLON/.git" ]; then
   git clone "$REPO" "$CLON"
 fi
 touch "$CLON/.recolector_casa"   # marcador: el script hace reset --hard y solo corre en este clon
+# submódulo privado site/modelos (LUB-MODELOS3D): el token https del celu no lo cubre y el clone del submódulo no lee
+# el insteadOf del superproyecto; va por SSH con la deploy key de solo lectura (alias github-modelos, ver docs/celular.md)
+git -C "$CLON" config submodule.site/modelos.url git@github-modelos:noguerafran-alt/LUB-MODELOS3D.git
+git -C "$CLON" submodule update --init --recursive || echo "aviso: falta la deploy key github-modelos; sin 3D hasta cargarla"
 mkdir -p "$CLON/logs"
 
 # crontab: recolección 06:00 hora argentina y pull liviano cada hora en el minuto 20 (se sacan las líneas viejas si ya estaban)
